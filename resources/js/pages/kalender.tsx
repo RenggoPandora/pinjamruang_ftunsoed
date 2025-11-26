@@ -3,13 +3,16 @@ import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Calendar as CalendarIcon, Filter } from 'lucide-react';
-import { useState, useRef } from 'react';
+import { Calendar as CalendarIcon, Filter, User, Building, Clock, Users, FileText, Download } from 'lucide-react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 
@@ -25,8 +28,11 @@ interface ReservationEvent {
         gedung: string;
         ruang: string;
         user: string;
+        user_email: string;
         jumlah_peserta: number;
         tujuan_peminjaman: string;
+        status: string;
+        surat_pengajuan: string | null;
     };
 }
 
@@ -48,11 +54,16 @@ interface Props {
 }
 
 export default function Kalender({ events, gedungs, ruangs }: Props) {
-    const calendarRef = useRef<any>(null);
+    const calendarRef = useRef<InstanceType<typeof FullCalendar>>(null);
     const [selectedGedung, setSelectedGedung] = useState<string>('all');
     const [selectedRuang, setSelectedRuang] = useState<string>('all');
     const [selectedMonth, setSelectedMonth] = useState<string>('all');
-    const [filteredEvents, setFilteredEvents] = useState(events);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<ReservationEvent | null>(null);
+
+    // Debug: Log events data
+    console.log('Events from backend:', events);
+    console.log('Total events:', events.length);
 
     // Generate months for filter (current month + next 6 months)
     const months = Array.from({ length: 7 }, (_, i) => {
@@ -69,9 +80,11 @@ export default function Kalender({ events, gedungs, ruangs }: Props) {
         ? ruangs
         : ruangs.filter(ruang => ruang.gedung_id === parseInt(selectedGedung));
 
-    // Apply filters
-    const applyFilters = () => {
+    // Apply filters with useMemo
+    const filteredEvents = useMemo(() => {
         let filtered = [...events];
+
+        console.log('Before filtering:', filtered.length);
 
         // Filter by gedung
         if (selectedGedung !== 'all') {
@@ -94,14 +107,19 @@ export default function Kalender({ events, gedungs, ruangs }: Props) {
             });
         }
 
-        setFilteredEvents(filtered);
+        console.log('After filtering:', filtered.length);
+        console.log('Filtered events sample:', filtered.slice(0, 2));
 
-        // Navigate calendar to selected month
+        return filtered;
+    }, [selectedGedung, selectedRuang, selectedMonth, events, ruangs]);
+
+    // Navigate calendar to selected month
+    useEffect(() => {
         if (selectedMonth !== 'all' && calendarRef.current) {
             const calendarApi = calendarRef.current.getApi();
             calendarApi.gotoDate(selectedMonth + '-01');
         }
-    };
+    }, [selectedMonth]);
 
     // Handle filter changes
     const handleGedungChange = (value: string) => {
@@ -117,36 +135,31 @@ export default function Kalender({ events, gedungs, ruangs }: Props) {
         setSelectedMonth(value);
     };
 
-    // Apply filters whenever selection changes
-    useState(() => {
-        applyFilters();
-    });
-
     // Event click handler
-    const handleEventClick = (info: any) => {
+    const handleEventClick = (info: { event: { id: string; title: string; start: Date | null; end: Date | null; extendedProps: Record<string, unknown> } }) => {
         const event = info.event;
         const props = event.extendedProps;
         
-        const details = `
-═══════════════════════════════════
-DETAIL PEMINJAMAN RUANG
-═══════════════════════════════════
-
-📋 Organisasi: ${props.organization}
-👤 Pemohon: ${props.user}
-
-🏢 Lokasi: ${props.gedung} - ${props.ruang}
-📅 Tanggal: ${format(new Date(event.start), 'dd MMMM yyyy', { locale: id })}
-⏰ Waktu: ${format(new Date(event.start), 'HH:mm')} - ${format(new Date(event.end), 'HH:mm')}
-👥 Jumlah Peserta: ${props.jumlah_peserta} orang
-
-📝 Tujuan:
-${props.tujuan_peminjaman}
-
-═══════════════════════════════════
-        `.trim();
-
-        alert(details);
+        setSelectedEvent({
+            id: event.id,
+            title: event.title,
+            start: event.start?.toISOString() || '',
+            end: event.end?.toISOString() || '',
+            backgroundColor: '',
+            borderColor: '',
+            extendedProps: {
+                organization: props.organization as string,
+                gedung: props.gedung as string,
+                ruang: props.ruang as string,
+                user: props.user as string,
+                user_email: props.user_email as string,
+                jumlah_peserta: props.jumlah_peserta as number,
+                tujuan_peminjaman: props.tujuan_peminjaman as string,
+                status: props.status as string,
+                surat_pengajuan: props.surat_pengajuan as string | null,
+            }
+        });
+        setIsDialogOpen(true);
     };
 
     return (
@@ -173,7 +186,7 @@ ${props.tujuan_peminjaman}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="gedung">Gedung</Label>
                                 <Select value={selectedGedung} onValueChange={handleGedungChange}>
@@ -223,15 +236,6 @@ ${props.tujuan_peminjaman}
                                         ))}
                                     </SelectContent>
                                 </Select>
-                            </div>
-
-                            <div className="flex items-end">
-                                <button
-                                    onClick={applyFilters}
-                                    className="w-full h-10 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-                                >
-                                    Terapkan Filter
-                                </button>
                             </div>
                         </div>
 
@@ -303,6 +307,109 @@ ${props.tujuan_peminjaman}
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Event Detail Dialog */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <FileText className="h-5 w-5" />
+                            Detail Peminjaman Ruangan
+                        </DialogTitle>
+                        <DialogDescription>
+                            Informasi lengkap peminjaman yang telah disetujui
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    {selectedEvent && (
+                        <div className="space-y-4">
+                            {/* Applicant Info */}
+                            <div className="flex items-start gap-3 p-3 bg-muted rounded-md">
+                                <User className="h-5 w-5 text-muted-foreground mt-0.5" />
+                                <div>
+                                    <Label className="text-xs text-muted-foreground">Nama Pemohon</Label>
+                                    <p className="font-medium">{selectedEvent.extendedProps.user}</p>
+                                    <p className="text-sm text-muted-foreground">{selectedEvent.extendedProps.user_email}</p>
+                                </div>
+                            </div>
+
+                            {/* Organization */}
+                            <div className="flex items-start gap-3 p-3 bg-muted rounded-md">
+                                <Building className="h-5 w-5 text-muted-foreground mt-0.5" />
+                                <div>
+                                    <Label className="text-xs text-muted-foreground">Organisasi</Label>
+                                    <p className="font-medium">{selectedEvent.extendedProps.organization}</p>
+                                </div>
+                            </div>
+
+                            {/* Event Details */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="flex items-start gap-3 p-3 bg-muted rounded-md">
+                                    <Building className="h-5 w-5 text-muted-foreground mt-0.5" />
+                                    <div>
+                                        <Label className="text-xs text-muted-foreground">Ruangan</Label>
+                                        <p className="font-medium">{selectedEvent.extendedProps.ruang}</p>
+                                        <p className="text-sm text-muted-foreground">{selectedEvent.extendedProps.gedung}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-start gap-3 p-3 bg-muted rounded-md">
+                                    <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
+                                    <div>
+                                        <Label className="text-xs text-muted-foreground">Waktu</Label>
+                                        <p className="font-medium">
+                                            {format(new Date(selectedEvent.start), 'HH:mm', { locale: id })} - {format(new Date(selectedEvent.end), 'HH:mm', { locale: id })}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {format(new Date(selectedEvent.start), 'dd MMMM yyyy', { locale: id })}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-start gap-3 p-3 bg-muted rounded-md">
+                                    <Users className="h-5 w-5 text-muted-foreground mt-0.5" />
+                                    <div>
+                                        <Label className="text-xs text-muted-foreground">Jumlah Peserta</Label>
+                                        <p className="font-medium">{selectedEvent.extendedProps.jumlah_peserta} orang</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-start gap-3 p-3 bg-muted rounded-md">
+                                    <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
+                                    <div>
+                                        <Label className="text-xs text-muted-foreground">Status</Label>
+                                        <Badge variant="success" className="mt-1">
+                                            {selectedEvent.extendedProps.status === 'approved_wd' ? 'Disetujui WD2' : 'Disetujui SCO'}
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Event Description */}
+                            <div className="p-3 bg-muted rounded-md">
+                                <Label className="text-xs text-muted-foreground">Nama Acara</Label>
+                                <p className="mt-1">{selectedEvent.extendedProps.tujuan_peminjaman}</p>
+                            </div>
+
+                            {/* Document Download */}
+                            {selectedEvent.extendedProps.surat_pengajuan && (
+                                <div className="flex justify-end pt-2">
+                                    <Button variant="outline" size="sm" asChild>
+                                        <a
+                                            href={`/storage/${selectedEvent.extendedProps.surat_pengajuan}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Download className="h-4 w-4 mr-2" />
+                                            Download Surat Pengajuan
+                                        </a>
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
 
             <style>{`
                 .fullcalendar-wrapper .fc {
