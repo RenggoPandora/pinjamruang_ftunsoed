@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useRef } from 'react';
@@ -28,6 +29,10 @@ interface ReservationRequest {
     end_time: string;
     status: string;
     deskripsi_acara: string;
+    user?: {
+        name: string;
+        email: string;
+    };
     ruang?: {
         code: string;
         name: string;
@@ -101,6 +106,7 @@ export default function Beranda({ reservations = [], approvedDates = [] }: Beran
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
+                                                <TableHead>Pemohon</TableHead>
                                                 <TableHead>Tanggal</TableHead>
                                                 <TableHead>Waktu</TableHead>
                                                 <TableHead>Ruangan</TableHead>
@@ -113,6 +119,16 @@ export default function Beranda({ reservations = [], approvedDates = [] }: Beran
                                         <TableBody>
                                             {reservations.map((reservation) => (
                                                 <TableRow key={reservation.id}>
+                                                    <TableCell>
+                                                        <div>
+                                                            <div className="font-medium">
+                                                                {reservation.user?.name || 'N/A'}
+                                                            </div>
+                                                            <div className="text-sm text-muted-foreground">
+                                                                {reservation.user?.email || '-'}
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
                                                     <TableCell className="font-medium">
                                                         {format(
                                                             new Date(reservation.tanggal),
@@ -151,7 +167,8 @@ export default function Beranda({ reservations = [], approvedDates = [] }: Beran
                                                             size="sm"
                                                             onClick={() => router.visit(`/detail/${reservation.id}`)}
                                                         >
-                                                            Lihat
+                                                            <FileText className="h-4 w-4 mr-2" />
+                                                            Detail
                                                         </Button>
                                                     </TableCell>
                                                 </TableRow>

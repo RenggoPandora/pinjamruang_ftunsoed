@@ -12,15 +12,13 @@ class BerandaController extends Controller
     {
         $user = $request->user();
 
-        // Get all reservations for the current user
-        $reservations = ReservationRequest::with(['ruang.gedung', 'organisasi'])
-            ->where('applicant_id', $user->id)
+        // Get all reservations from all applicants
+        $reservations = ReservationRequest::with(['ruang.gedung', 'organisasi', 'user'])
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        // Get approved dates for calendar
-        $approvedDates = ReservationRequest::where('applicant_id', $user->id)
-            ->whereIn('status', ['approved_sco', 'approved_wd'])
+        // Get approved dates for calendar (all approved reservations)
+        $approvedDates = ReservationRequest::whereIn('status', ['approved_sco', 'approved_wd'])
             ->pluck('tanggal')
             ->toArray();
 
