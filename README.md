@@ -37,7 +37,7 @@ composer require laravel/socialite
 Salin `.env.example` ke `.env` dan konfigurasikan:
 
 ```env
-APP_NAME="PinjamRuang FT UNSOED"
+APP_NAME="Pinjam Ruang FT UNSOED"
 APP_URL=http://localhost
 
 DB_CONNECTION=mysql
@@ -102,7 +102,7 @@ npm run dev
 1. Pilih "OAuth consent screen" di menu sidebar
 2. Pilih "External" dan klik "Create"
 3. Isi informasi aplikasi:
-   - App name: PinjamRuang FT UNSOED
+   - App name: Pinjam Ruang FT UNSOED
    - User support email: email Anda
    - Developer contact: email Anda
 

@@ -61,7 +61,7 @@ export default function Welcome({
                                 className="h-12 w-12"
                             />
                             <div className="text-white">
-                                <h1 className="text-xl font-bold">PinjamRuang</h1>
+                                <h1 className="text-xl font-bold">Pinjam Ruang</h1>
                                 <p className="text-xs text-white/80">Fakultas Teknik UNSOED</p>
                             </div>
                         </div>
@@ -149,7 +149,7 @@ export default function Welcome({
                                             asChild
                                             size="lg"
                                             variant="outline"
-                                            className="border-white text-white hover:bg-white/10"
+                                            className="border-white text-[oklch(0.3_0.08_255)] hover:bg-white/10"
                                         >
                                             <Link href={login()}>
                                                 Sudah Punya Akun?
@@ -257,12 +257,12 @@ export default function Welcome({
                                 className="h-10 w-10"
                             />
                             <div>
-                                <p className="font-semibold">PinjamRuang FT UNSOED</p>
+                                <p className="font-semibold">Pinjam Ruang FT UNSOED</p>
                                 <p className="text-sm text-gray-400">Fakultas Teknik - Universitas Jenderal Soedirman</p>
                             </div>
                         </div>
                         <p className="text-gray-400 text-sm">
-                            © {new Date().getFullYear()} PinjamRuang FT UNSOED. All rights reserved.
+                            © {new Date().getFullYear()} Pinjam Ruang FT UNSOED. All rights reserved.
                         </p>
                     </div>
                 </div>

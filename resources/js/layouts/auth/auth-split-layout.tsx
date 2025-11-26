@@ -26,7 +26,7 @@ export default function AuthSplitLayout({
                 >
                     <AppLogoIcon className="size-10" />
                     <div>
-                        <p className="text-xl font-bold">PinjamRuang</p>
+                        <p className="text-xl font-bold">Pinjam Ruang</p>
                         <p className="text-xs text-white/80">Fakultas Teknik UNSOED</p>
                     </div>
                 </Link>
@@ -83,7 +83,7 @@ export default function AuthSplitLayout({
                     >
                         <AppLogoIcon className="h-12 w-12" />
                         <div className="text-left">
-                            <p className="text-lg font-bold text-[oklch(0.3_0.08_255)]">PinjamRuang</p>
+                            <p className="text-lg font-bold text-[oklch(0.3_0.08_255)]">Pinjam Ruang</p>
                             <p className="text-xs text-muted-foreground">Fakultas Teknik UNSOED</p>
                         </div>
                     </Link>
