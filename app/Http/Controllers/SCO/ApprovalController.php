@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SCO;
 
 use App\Http\Controllers\Controller;
 use App\Models\ReservationRequest;
+use App\Notifications\ReservationStatusChanged;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -77,6 +78,16 @@ class ApprovalController extends Controller
                     'catatan_sco' => $validated['catatan_sco'],
                     'tanggal_approval_sco' => now(),
                 ]);
+                
+                // Send email notification to applicant
+                $reservationRequest->applicant->notify(
+                    new ReservationStatusChanged(
+                        $reservationRequest->fresh(['ruang.gedung', 'organisasi']),
+                        'approved_sco',
+                        $validated['catatan_sco']
+                    )
+                );
+                
                 $message = 'Permintaan berhasil disetujui';
                 break;
 
@@ -87,6 +98,16 @@ class ApprovalController extends Controller
                     'catatan_sco' => $validated['catatan_sco'],
                     'tanggal_approval_sco' => now(),
                 ]);
+                
+                // Send email notification to applicant
+                $reservationRequest->applicant->notify(
+                    new ReservationStatusChanged(
+                        $reservationRequest->fresh(['ruang.gedung', 'organisasi']),
+                        'forwarded_wd',
+                        $validated['catatan_sco']
+                    )
+                );
+                
                 $message = 'Permintaan berhasil diteruskan ke WD2';
                 break;
 
@@ -97,6 +118,16 @@ class ApprovalController extends Controller
                     'catatan_sco' => $validated['catatan_sco'],
                     'tanggal_approval_sco' => now(),
                 ]);
+                
+                // Send email notification to applicant
+                $reservationRequest->applicant->notify(
+                    new ReservationStatusChanged(
+                        $reservationRequest->fresh(['ruang.gedung', 'organisasi']),
+                        'rejected_sco',
+                        $validated['catatan_sco']
+                    )
+                );
+                
                 $message = 'Permintaan berhasil ditolak';
                 break;
         }

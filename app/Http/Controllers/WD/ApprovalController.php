@@ -4,6 +4,7 @@ namespace App\Http\Controllers\WD;
 
 use App\Http\Controllers\Controller;
 use App\Models\ReservationRequest;
+use App\Notifications\ReservationStatusChanged;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -76,6 +77,16 @@ class ApprovalController extends Controller
                 'catatan_wd' => $validated['catatan_wd'],
                 'tanggal_approval_wd' => now(),
             ]);
+            
+            // Send email notification to applicant
+            $reservationRequest->applicant->notify(
+                new ReservationStatusChanged(
+                    $reservationRequest->fresh(['ruang.gedung', 'organisasi']),
+                    'approved_wd',
+                    $validated['catatan_wd']
+                )
+            );
+            
             $message = 'Permintaan berhasil disetujui';
         } else {
             $reservationRequest->update([
@@ -83,6 +94,16 @@ class ApprovalController extends Controller
                 'catatan_wd' => $validated['catatan_wd'],
                 'tanggal_approval_wd' => now(),
             ]);
+            
+            // Send email notification to applicant
+            $reservationRequest->applicant->notify(
+                new ReservationStatusChanged(
+                    $reservationRequest->fresh(['ruang.gedung', 'organisasi']),
+                    'rejected_wd',
+                    $validated['catatan_wd']
+                )
+            );
+            
             $message = 'Permintaan berhasil ditolak';
         }
 
