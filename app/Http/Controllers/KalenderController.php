@@ -19,15 +19,16 @@ class KalenderController extends Controller
 
         // Transform to FullCalendar events format
         $events = $reservations->map(function ($reservation) {
-            // Create Carbon instances for proper ISO formatting
-            $startDateTime = \Carbon\Carbon::parse($reservation->tanggal->format('Y-m-d') . ' ' . $reservation->start_time);
-            $endDateTime = \Carbon\Carbon::parse($reservation->tanggal->format('Y-m-d') . ' ' . $reservation->end_time);
+            // Use format without timezone to prevent UTC conversion
+            // Format: YYYY-MM-DD HH:mm:ss
+            $startDateTime = $reservation->tanggal->format('Y-m-d') . ' ' . $reservation->start_time;
+            $endDateTime = $reservation->tanggal->format('Y-m-d') . ' ' . $reservation->end_time;
 
             return [
                 'id' => (string) $reservation->id,
                 'title' => $reservation->organisasi->name . ' - ' . $reservation->ruang->code,
-                'start' => $startDateTime->toIso8601String(),
-                'end' => $endDateTime->toIso8601String(),
+                'start' => $startDateTime,
+                'end' => $endDateTime,
                 'backgroundColor' => 'oklch(0.3 0.08 255)', // Navy blue theme
                 'borderColor' => 'oklch(0.3 0.08 255)',
                 'extendedProps' => [
