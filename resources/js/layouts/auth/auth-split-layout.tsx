@@ -39,39 +39,8 @@ export default function AuthSplitLayout({
                         <p className="text-lg text-white/80">
                             Kelola peminjaman ruangan dengan mudah, cepat, dan efisien
                         </p>
-                    </div>
+                    </div>      
                     
-                    <div className="space-y-4">
-                        <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
-                                <Building2 className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <p className="font-semibold">50+ Ruangan Tersedia</p>
-                                <p className="text-sm text-white/70">Di seluruh gedung Fakultas Teknik</p>
-                            </div>
-                        </div>
-                        
-                        <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
-                                <Users className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <p className="font-semibold">Mudah & Terintegrasi</p>
-                                <p className="text-sm text-white/70">Untuk semua organisasi mahasiswa</p>
-                            </div>
-                        </div>
-                        
-                        <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
-                                <Shield className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <p className="font-semibold">Aman & Terpercaya</p>
-                                <p className="text-sm text-white/70">Dengan sistem persetujuan bertingkat</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             

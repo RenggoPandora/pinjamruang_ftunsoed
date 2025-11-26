@@ -159,22 +159,6 @@ export default function Welcome({
                                 )}
                             </div>
                             
-                            <div className="flex items-center gap-8 pt-8">
-                                <div>
-                                    <p className="text-3xl font-bold">500+</p>
-                                    <p className="text-white/70 text-sm">Peminjaman Sukses</p>
-                                </div>
-                                <div className="h-12 w-px bg-white/20"></div>
-                                <div>
-                                    <p className="text-3xl font-bold">50+</p>
-                                    <p className="text-white/70 text-sm">Ruangan Tersedia</p>
-                                </div>
-                                <div className="h-12 w-px bg-white/20"></div>
-                                <div>
-                                    <p className="text-3xl font-bold">100%</p>
-                                    <p className="text-white/70 text-sm">Digital & Terintegrasi</p>
-                                </div>
-                            </div>
                         </div>
                         
                         <div className="hidden lg:block">

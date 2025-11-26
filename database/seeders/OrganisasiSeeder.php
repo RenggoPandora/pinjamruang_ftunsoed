@@ -14,12 +14,18 @@ class OrganisasiSeeder extends Seeder
     public function run(): void
     {
         $organisasis = [
-            ['code' => 'BEM', 'name' => 'Badan Eksekutif Mahasiswa'],
-            ['code' => 'HIMASI', 'name' => 'Himpunan Mahasiswa Sistem Informasi'],
-            ['code' => 'HIMATIF', 'name' => 'Himpunan Mahasiswa Teknik Informatika'],
-            ['code' => 'HIMAKOM', 'name' => 'Himpunan Mahasiswa Ilmu Komputer'],
-            ['code' => 'UKM-OLAHRAGA', 'name' => 'Unit Kegiatan Mahasiswa Olahraga'],
-            ['code' => 'UKM-SENI', 'name' => 'Unit Kegiatan Mahasiswa Seni'],
+            ['code' => 'BEM FT', 'name' => 'Badan Eksekutif Mahasiswa'],
+            ['code' => 'DLM FT', 'name' => 'Dewan Legislatif Mahasiswa'],
+            ['code' => 'HMTI', 'name' => 'Himpunan Mahasiswa Teknik Industri'],
+            ['code' => 'HMIFF', 'name' => 'Himpunan Mahasiswa Informatika'],
+            ['code' => 'HMTS', 'name' => 'Himpunan Mahasiswa Teknik Sipil'],
+            ['code' => 'HMTE', 'name' => 'Himpunan Mahasiswa Teknik Elektro'],
+            ['code' => 'HMTG', 'name' => 'Himpunan Mahasiswa Teknik Geologi'],
+            ['code' => 'SENIOR', 'name' => 'Unit Kegiatan Seni dan Olahraga'],
+            ['code' => 'SEEO', 'name' => 'Soedirman Enggineering Entrepreneurship Organization'],
+            ['code' => 'TN', 'name' => 'Titik Nol'],
+            ['code' => 'EEC', 'name' => 'Engineering English Club'],
+            ['code' => 'SALMAN', 'name' => 'SALMAN FT UNSOED'],
         ];
 
         foreach ($organisasis as $organisasi) {

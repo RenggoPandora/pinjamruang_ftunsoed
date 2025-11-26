@@ -83,11 +83,15 @@ export function AppSidebar() {
     }
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+        <Sidebar collapsible="icon" variant="inset" className="border-r border-border/40">
+            <SidebarHeader className="border-b border-border/40 bg-gradient-to-b from-background to-muted/20">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton 
+                            size="lg" 
+                            asChild
+                            className="hover:bg-accent/50 transition-all duration-300"
+                        >
                             <Link href={dashboard()} prefetch>
                                 <AppLogo />
                             </Link>
@@ -96,11 +100,11 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="py-2">
                 <NavMain items={mainNavItems} />
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarFooter className="border-t border-border/40 bg-gradient-to-t from-background to-muted/20">
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
