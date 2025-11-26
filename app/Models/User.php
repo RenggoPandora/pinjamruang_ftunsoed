@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -22,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -48,5 +50,37 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get the reservation requests for the user (applicant).
+     */
+    public function reservationRequests(): HasMany
+    {
+        return $this->hasMany(ReservationRequest::class, 'applicant_id');
+    }
+
+    /**
+     * Check if user is an applicant.
+     */
+    public function isApplicant(): bool
+    {
+        return $this->role === 'APP';
+    }
+
+    /**
+     * Check if user is a sub coordinator.
+     */
+    public function isSubCoordinator(): bool
+    {
+        return $this->role === 'SCO';
+    }
+
+    /**
+     * Check if user is WD2.
+     */
+    public function isWD(): bool
+    {
+        return $this->role === 'WD';
     }
 }

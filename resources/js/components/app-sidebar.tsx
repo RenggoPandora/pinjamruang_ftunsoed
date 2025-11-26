@@ -12,32 +12,76 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { Home, FileText, History, Calendar, CheckSquare, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+// Applicant menu items
+const applicantNavItems: NavItem[] = [
+    {
+        title: 'Beranda',
+        href: '/beranda',
+        icon: Home,
+    },
+    {
+        title: 'Peminjaman',
+        href: '/peminjaman',
+        icon: FileText,
+    },
+    {
+        title: 'Riwayat',
+        href: '/riwayat',
+        icon: History,
+    },
+    {
+        title: 'Kalender',
+        href: '/kalender',
+        icon: Calendar,
+    },
+];
+
+// SCO menu items
+const scoNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
+        href: '/sco/beranda',
+        icon: Home,
+    },
+    {
+        title: 'Kalender',
+        href: '/kalender',
+        icon: Calendar,
     },
 ];
 
-const footerNavItems: NavItem[] = [
+// WD menu items
+const wdNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        title: 'Dashboard',
+        href: '/wd/beranda',
+        icon: Home,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        title: 'Kalender',
+        href: '/kalender',
+        icon: Calendar,
     },
 ];
+
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
+    const { auth } = usePage().props as any;
+    const userRole = auth?.user?.role || 'APP';
+
+    // Select menu items based on user role
+    let mainNavItems: NavItem[] = applicantNavItems;
+    if (userRole === 'SCO') {
+        mainNavItems = scoNavItems;
+    } else if (userRole === 'WD') {
+        mainNavItems = wdNavItems;
+    }
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -57,7 +101,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
