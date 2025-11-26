@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -53,12 +53,12 @@ interface RiwayatProps {
 export default function Riwayat({ reservations, statistics }: RiwayatProps) {
     const getStatusBadge = (status: string) => {
         const statusConfig = {
-            pending: { label: 'Menunggu SCO', variant: 'secondary' as const },
-            approved_sco: { label: 'Disetujui SCO', variant: 'default' as const },
+            pending: { label: 'Menunggu Persetujuan SCO', variant: 'warning' as const },
+            approved_sco: { label: 'Disetujui', variant: 'success' as const },
             rejected_sco: { label: 'Ditolak SCO', variant: 'destructive' as const },
-            pending_wd: { label: 'Menunggu WD', variant: 'secondary' as const },
-            approved_wd: { label: 'Disetujui', variant: 'default' as const },
-            rejected_wd: { label: 'Ditolak', variant: 'destructive' as const },
+            pending_wd: { label: 'Menunggu Persetujuan WD2', variant: 'warning' as const },
+            approved_wd: { label: 'Disetujui', variant: 'success' as const },
+            rejected_wd: { label: 'Ditolak WD2', variant: 'destructive' as const },
         };
 
         const config = statusConfig[status as keyof typeof statusConfig] || {
@@ -189,7 +189,11 @@ export default function Riwayat({ reservations, statistics }: RiwayatProps) {
                                                 {getStatusBadge(reservation.status)}
                                             </TableCell>
                                             <TableCell>
-                                                <Button variant="ghost" size="sm">
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm"
+                                                    onClick={() => router.visit(`/detail/${reservation.id}`)}
+                                                >
                                                     <FileText className="h-4 w-4 mr-2" />
                                                     Detail
                                                 </Button>

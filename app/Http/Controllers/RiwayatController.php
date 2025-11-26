@@ -21,9 +21,9 @@ class RiwayatController extends Controller
         // Calculate statistics
         $statistics = [
             'total' => $reservations->count(),
-            'approved' => $reservations->where('status', 'approved_wd')->count(),
+            'approved' => $reservations->whereIn('status', ['approved_sco', 'approved_wd'])->count(),
             'rejected' => $reservations->whereIn('status', ['rejected_sco', 'rejected_wd'])->count(),
-            'pending' => $reservations->whereIn('status', ['pending', 'pending_wd', 'approved_sco'])->count(),
+            'pending' => $reservations->whereIn('status', ['pending', 'pending_wd'])->count(),
         ];
 
         return Inertia::render('riwayat', [

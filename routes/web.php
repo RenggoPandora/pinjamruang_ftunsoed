@@ -5,6 +5,7 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\KalenderController;
+use App\Http\Controllers\DetailController;
 use App\Http\Controllers\SCO\BerandaController as SCOBerandaController;
 use App\Http\Controllers\SCO\ApprovalController as SCOApprovalController;
 use App\Http\Controllers\WD\BerandaController as WDBerandaController;
@@ -42,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('peminjaman', [PeminjamanController::class, 'index'])->name('peminjaman.index');
     Route::post('peminjaman', [PeminjamanController::class, 'store'])->name('peminjaman.store');
     Route::get('riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+    Route::get('detail/{id}', [DetailController::class, 'show'])->name('detail.show');
 
     // Global Calendar (All Roles)
     Route::get('kalender', [KalenderController::class, 'index'])->name('kalender');

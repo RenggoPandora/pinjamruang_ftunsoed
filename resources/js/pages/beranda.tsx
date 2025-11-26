@@ -1,4 +1,4 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useRef } from 'react';
@@ -47,12 +48,12 @@ interface BerandaProps {
 export default function Beranda({ reservations = [], approvedDates = [] }: BerandaProps) {
     const getStatusBadge = (status: string) => {
         const statusConfig = {
-            pending: { label: 'Menunggu SCO', variant: 'secondary' as const },
-            approved_sco: { label: 'Disetujui SCO', variant: 'default' as const },
+            pending: { label: 'Menunggu Persetujuan SCO', variant: 'warning' as const },
+            approved_sco: { label: 'Disetujui', variant: 'success' as const },
             rejected_sco: { label: 'Ditolak SCO', variant: 'destructive' as const },
-            pending_wd: { label: 'Menunggu WD', variant: 'secondary' as const },
-            approved_wd: { label: 'Disetujui', variant: 'default' as const },
-            rejected_wd: { label: 'Ditolak', variant: 'destructive' as const },
+            pending_wd: { label: 'Menunggu Persetujuan WD2', variant: 'warning' as const },
+            approved_wd: { label: 'Disetujui', variant: 'success' as const },
+            rejected_wd: { label: 'Ditolak WD2', variant: 'destructive' as const },
         };
 
         const config = statusConfig[status as keyof typeof statusConfig] || {
@@ -106,6 +107,7 @@ export default function Beranda({ reservations = [], approvedDates = [] }: Beran
                                                 <TableHead>Organisasi</TableHead>
                                                 <TableHead>Acara</TableHead>
                                                 <TableHead>Status</TableHead>
+                                                <TableHead>Aksi</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -142,6 +144,15 @@ export default function Beranda({ reservations = [], approvedDates = [] }: Beran
                                                     </TableCell>
                                                     <TableCell>
                                                         {getStatusBadge(reservation.status)}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => router.visit(`/detail/${reservation.id}`)}
+                                                        >
+                                                            Lihat
+                                                        </Button>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
