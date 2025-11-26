@@ -19,6 +19,7 @@ import {
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ReservationRequest {
     id: number;
@@ -54,6 +55,7 @@ interface ApprovalProps {
 
 export default function ScoApprovalPage({ reservation }: ApprovalProps) {
     const [action, setAction] = useState<'approve' | 'reject' | null>(null);
+    const { toast } = useToast();
     
     const { data, setData, post, processing } = useForm({
         action: '',
@@ -75,7 +77,29 @@ export default function ScoApprovalPage({ reservation }: ApprovalProps) {
     const handleSubmit = () => {
         post(`/sco/approval/${reservation.id}`, {
             onSuccess: () => {
-                router.visit('/sco/beranda');
+                const isForwarded = reservation.ruang.is_aula && action === 'approve';
+                const isRejected = action === 'reject';
+                
+                toast({
+                    variant: isRejected ? 'destructive' : 'success',
+                    title: isRejected ? 'Pengajuan Ditolak' : isForwarded ? 'Diteruskan ke WD2' : 'Pengajuan Disetujui',
+                    description: isRejected 
+                        ? 'Pengajuan peminjaman telah ditolak' 
+                        : isForwarded 
+                        ? 'Pengajuan peminjaman aula telah diteruskan ke WD2 untuk persetujuan final'
+                        : 'Pengajuan peminjaman ruangan telah disetujui',
+                });
+                
+                setTimeout(() => {
+                    router.visit('/sco/beranda');
+                }, 1500);
+            },
+            onError: () => {
+                toast({
+                    variant: 'destructive',
+                    title: 'Terjadi Kesalahan',
+                    description: 'Gagal memproses pengajuan, silakan coba lagi',
+                });
             },
         });
     };

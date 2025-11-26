@@ -12,6 +12,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Bell, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 interface Stats {
     total_pending: number;
@@ -153,7 +155,7 @@ export default function ScoBerandaPage({ statistics, pendingRequests, newRequest
                                     <TableRow>
                                         <TableHead>Pemohon</TableHead>
                                         <TableHead>Organisasi</TableHead>
-                                        <TableHead>Ruangan</TableHead>
+                                        <TableHead className="text-center">Ruangan</TableHead>
                                         <TableHead>Tanggal & Waktu</TableHead>
                                         <TableHead>Peserta</TableHead>
                                         <TableHead>Jenis</TableHead>
@@ -174,7 +176,7 @@ export default function ScoBerandaPage({ statistics, pendingRequests, newRequest
                                                 </div>
                                             </TableCell>
                                             <TableCell>{request.organisasi?.name || '-'}</TableCell>
-                                            <TableCell>
+                                            <TableCell className="text-center">
                                                 <div>
                                                     <div className="font-medium">
                                                         {request.ruang?.code || '-'}
@@ -186,7 +188,7 @@ export default function ScoBerandaPage({ statistics, pendingRequests, newRequest
                                             </TableCell>
                                             <TableCell>
                                                 <div>
-                                                    <div>{request.tanggal}</div>
+                                                    <div>{format(new Date(request.tanggal), 'dd MMMM yyyy', { locale: id })}</div>
                                                     <div className="text-sm text-muted-foreground">
                                                         {request.start_time} - {request.end_time}
                                                     </div>

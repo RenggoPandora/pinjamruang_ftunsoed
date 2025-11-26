@@ -10,6 +10,7 @@ import { User, Building2, Calendar, Clock, Users, FileText, Download, CheckCircl
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ReservationRequest {
     id: number;
@@ -47,17 +48,26 @@ export default function WDApproval({ reservation }: Props) {
     const [action, setAction] = useState<'approve' | 'reject' | null>(null);
     const [notes, setNotes] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { toast } = useToast();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
         if (!action) {
-            alert('Silakan pilih tindakan terlebih dahulu');
+            toast({
+                variant: 'destructive',
+                title: 'Peringatan',
+                description: 'Silakan pilih tindakan terlebih dahulu',
+            });
             return;
         }
 
         if (action === 'reject' && !notes.trim()) {
-            alert('Mohon berikan catatan/alasan penolakan');
+            toast({
+                variant: 'destructive',
+                title: 'Peringatan',
+                description: 'Mohon berikan catatan/alasan penolakan',
+            });
             return;
         }
 
@@ -68,10 +78,22 @@ export default function WDApproval({ reservation }: Props) {
             catatan_wd: notes,
         }, {
             onSuccess: () => {
-                alert(`Permintaan berhasil ${action === 'approve' ? 'disetujui' : 'ditolak'}`);
+                toast({
+                    variant: action === 'approve' ? 'success' : 'destructive',
+                    title: action === 'approve' ? 'Pengajuan Disetujui' : 'Pengajuan Ditolak',
+                    description: `Permintaan peminjaman ruangan telah ${action === 'approve' ? 'disetujui' : 'ditolak'}`,
+                });
+                
+                setTimeout(() => {
+                    router.visit('/wd/beranda');
+                }, 1500);
             },
             onError: () => {
-                alert('Terjadi kesalahan, silakan coba lagi');
+                toast({
+                    variant: 'destructive',
+                    title: 'Terjadi Kesalahan',
+                    description: 'Gagal memproses pengajuan, silakan coba lagi',
+                });
                 setIsSubmitting(false);
             },
         });

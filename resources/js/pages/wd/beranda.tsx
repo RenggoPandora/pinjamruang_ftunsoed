@@ -139,7 +139,7 @@ export default function WDBeranda({ statistics, pendingRequests, newRequestsCoun
                                             <TableHead>Tanggal Pengajuan</TableHead>
                                             <TableHead>Pemohon</TableHead>
                                             <TableHead>Organisasi</TableHead>
-                                            <TableHead>Ruang</TableHead>
+                                            <TableHead className="text-center">Ruang</TableHead>
                                             <TableHead>Tanggal Peminjaman</TableHead>
                                             <TableHead>Waktu</TableHead>
                                             <TableHead>Status</TableHead>
@@ -159,7 +159,7 @@ export default function WDBeranda({ statistics, pendingRequests, newRequestsCoun
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>{request.organisasi?.name || '-'}</TableCell>
-                                                <TableCell>
+                                                <TableCell className="text-center">
                                                     <div>
                                                         <div className="font-medium">{request.ruang?.code || '-'}</div>
                                                         <div className="text-sm text-muted-foreground">{request.ruang?.gedung?.name || '-'}</div>

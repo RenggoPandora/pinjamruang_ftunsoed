@@ -43,7 +43,7 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=pinjamruang_ftunsoed
+DB_DATABASE=pinjamruangft
 DB_USERNAME=root
 DB_PASSWORD=
 
