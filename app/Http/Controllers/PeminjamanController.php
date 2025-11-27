@@ -6,6 +6,8 @@ use App\Models\Gedung;
 use App\Models\Organisasi;
 use App\Models\ReservationRequest;
 use App\Models\Ruang;
+use App\Models\User;
+use App\Notifications\NewReservationRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -49,7 +51,13 @@ class PeminjamanController extends Controller
         $validated['applicant_id'] = $request->user()->id;
         $validated['status'] = 'pending';
 
-        ReservationRequest::create($validated);
+        $reservationRequest = ReservationRequest::create($validated);
+
+        // Send notification to all SCO users
+        $scoUsers = User::where('role', 'sco')->get();
+        foreach ($scoUsers as $scoUser) {
+            $scoUser->notify(new NewReservationRequest($reservationRequest->fresh(['user', 'ruang.gedung', 'organisasi']), 'sco'));
+        }
 
         return redirect()->route('beranda')->with('success', 'Peminjaman berhasil diajukan!');
     }

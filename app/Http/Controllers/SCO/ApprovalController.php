@@ -4,6 +4,8 @@ namespace App\Http\Controllers\SCO;
 
 use App\Http\Controllers\Controller;
 use App\Models\ReservationRequest;
+use App\Models\User;
+use App\Notifications\NewReservationRequest;
 use App\Notifications\ReservationStatusChanged;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -107,6 +109,12 @@ class ApprovalController extends Controller
                         $validated['catatan_sco']
                     )
                 );
+                
+                // Send notification to all WD users
+                $wdUsers = User::where('role', 'wd')->get();
+                foreach ($wdUsers as $wdUser) {
+                    $wdUser->notify(new NewReservationRequest($reservationRequest->fresh(['user', 'ruang.gedung', 'organisasi']), 'wd'));
+                }
                 
                 $message = 'Permintaan berhasil diteruskan ke WD2';
                 break;

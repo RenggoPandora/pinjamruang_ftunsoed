@@ -24,21 +24,35 @@ class BerandaController extends Controller
             ->latest()
             ->get();
 
-        // Detect scheduling conflicts
-        $conflictGroups = [];
-        foreach ($pendingRequests as $request) {
-            $key = $request->ruang_id . '_' . $request->tanggal->format('Y-m-d') . '_' . $request->start_time . '_' . $request->end_time;
-            if (!isset($conflictGroups[$key])) {
-                $conflictGroups[$key] = [];
-            }
-            $conflictGroups[$key][] = $request->id;
-        }
+        // Detect scheduling conflicts (including overlapping times)
+        $pendingRequests = $pendingRequests->map(function ($request) use ($pendingRequests) {
+            $hasConflict = false;
+            $conflictCount = 0;
 
-        // Mark requests with conflicts
-        $pendingRequests = $pendingRequests->map(function ($request) use ($conflictGroups) {
-            $key = $request->ruang_id . '_' . $request->tanggal->format('Y-m-d') . '_' . $request->start_time . '_' . $request->end_time;
-            $hasConflict = count($conflictGroups[$key]) > 1;
-            $conflictCount = $hasConflict ? count($conflictGroups[$key]) : 0;
+            // Check for conflicts with other requests
+            foreach ($pendingRequests as $otherRequest) {
+                // Skip self-comparison
+                if ($request->id === $otherRequest->id) {
+                    continue;
+                }
+
+                // Check if same room and same date
+                if ($request->ruang_id === $otherRequest->ruang_id &&
+                    $request->tanggal->format('Y-m-d') === $otherRequest->tanggal->format('Y-m-d')) {
+
+                    // Check if times overlap
+                    $start1 = strtotime($request->start_time);
+                    $end1 = strtotime($request->end_time);
+                    $start2 = strtotime($otherRequest->start_time);
+                    $end2 = strtotime($otherRequest->end_time);
+
+                    // Times overlap if: start1 < end2 AND end1 > start2
+                    if ($start1 < $end2 && $end1 > $start2) {
+                        $hasConflict = true;
+                        $conflictCount++;
+                    }
+                }
+            }
 
             return [
                 'id' => $request->id,
