@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Bell, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Bell, CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 
@@ -29,6 +29,8 @@ interface ReservationRequest {
     status: string;
     deskripsi_acara: string;
     jumlah_orang: number;
+    has_conflict?: boolean;
+    conflict_count?: number;
     applicant?: {
         name: string;
         email: string;
@@ -164,7 +166,10 @@ export default function ScoBerandaPage({ statistics, pendingRequests, newRequest
                                 </TableHeader>
                                 <TableBody>
                                     {pendingRequests.map((request) => (
-                                        <TableRow key={request.id}>
+                                        <TableRow 
+                                            key={request.id}
+                                            className={request.has_conflict ? 'bg-amber-50 border-l-4 border-l-amber-500' : ''}
+                                        >
                                             <TableCell>
                                                 <div>
                                                     <div className="font-medium">
@@ -178,7 +183,10 @@ export default function ScoBerandaPage({ statistics, pendingRequests, newRequest
                                             <TableCell>{request.organisasi?.name || '-'}</TableCell>
                                             <TableCell className="text-center">
                                                 <div>
-                                                    <div className="font-medium">
+                                                    <div className="font-medium flex items-center justify-center gap-1">
+                                                        {request.has_conflict && (
+                                                            <AlertTriangle className="h-4 w-4 text-amber-600" />
+                                                        )}
                                                         {request.ruang?.code || '-'}
                                                     </div>
                                                     <div className="text-sm text-muted-foreground">
@@ -192,6 +200,12 @@ export default function ScoBerandaPage({ statistics, pendingRequests, newRequest
                                                     <div className="text-sm text-muted-foreground">
                                                         {request.start_time} - {request.end_time}
                                                     </div>
+                                                    {request.has_conflict && (
+                                                        <Badge variant="destructive" className="mt-1 text-xs">
+                                                            <AlertTriangle className="h-3 w-3 mr-1" />
+                                                            Konflik: {request.conflict_count} pengajuan
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>{request.jumlah_orang}</TableCell>
@@ -206,6 +220,7 @@ export default function ScoBerandaPage({ statistics, pendingRequests, newRequest
                                                 <Button
                                                     size="sm"
                                                     onClick={() => handleViewDetail(request.id)}
+                                                    variant={request.has_conflict ? 'destructive' : 'default'}
                                                 >
                                                     Review
                                                 </Button>

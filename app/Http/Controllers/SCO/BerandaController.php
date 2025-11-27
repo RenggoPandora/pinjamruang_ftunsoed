@@ -22,34 +22,52 @@ class BerandaController extends Controller
         $pendingRequests = ReservationRequest::with(['user', 'ruang.gedung', 'organisasi'])
             ->where('status', 'pending')
             ->latest()
-            ->get()
-            ->map(function ($request) {
-                return [
-                    'id' => $request->id,
-                    'tanggal' => $request->tanggal,
-                    'start_time' => $request->start_time,
-                    'end_time' => $request->end_time,
-                    'status' => $request->status,
-                    'deskripsi_acara' => $request->deskripsi_acara,
-                    'jumlah_orang' => $request->jumlah_orang,
-                    'applicant' => [
-                        'name' => $request->user->name,
-                        'email' => $request->user->email,
+            ->get();
+
+        // Detect scheduling conflicts
+        $conflictGroups = [];
+        foreach ($pendingRequests as $request) {
+            $key = $request->ruang_id . '_' . $request->tanggal->format('Y-m-d') . '_' . $request->start_time . '_' . $request->end_time;
+            if (!isset($conflictGroups[$key])) {
+                $conflictGroups[$key] = [];
+            }
+            $conflictGroups[$key][] = $request->id;
+        }
+
+        // Mark requests with conflicts
+        $pendingRequests = $pendingRequests->map(function ($request) use ($conflictGroups) {
+            $key = $request->ruang_id . '_' . $request->tanggal->format('Y-m-d') . '_' . $request->start_time . '_' . $request->end_time;
+            $hasConflict = count($conflictGroups[$key]) > 1;
+            $conflictCount = $hasConflict ? count($conflictGroups[$key]) : 0;
+
+            return [
+                'id' => $request->id,
+                'tanggal' => $request->tanggal,
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
+                'status' => $request->status,
+                'deskripsi_acara' => $request->deskripsi_acara,
+                'jumlah_orang' => $request->jumlah_orang,
+                'has_conflict' => $hasConflict,
+                'conflict_count' => $conflictCount,
+                'applicant' => [
+                    'name' => $request->user->name,
+                    'email' => $request->user->email,
+                ],
+                'ruang' => [
+                    'code' => $request->ruang->code,
+                    'name' => $request->ruang->name,
+                    'is_aula' => $request->ruang->is_aula,
+                    'gedung' => [
+                        'name' => $request->ruang->gedung->name,
                     ],
-                    'ruang' => [
-                        'code' => $request->ruang->code,
-                        'name' => $request->ruang->name,
-                        'is_aula' => $request->ruang->is_aula,
-                        'gedung' => [
-                            'name' => $request->ruang->gedung->name,
-                        ],
-                    ],
-                    'organisasi' => [
-                        'name' => $request->organisasi->name,
-                    ],
-                    'created_at' => $request->created_at,
-                ];
-            });
+                ],
+                'organisasi' => [
+                    'name' => $request->organisasi->name,
+                ],
+                'created_at' => $request->created_at,
+            ];
+        });
 
         // Count new requests (created within last 24 hours)
         $newRequestsCount = ReservationRequest::where('status', 'pending')
